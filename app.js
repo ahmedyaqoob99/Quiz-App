@@ -26,37 +26,74 @@ function next() {
     show(shuffledQuestion[currentQuestionIndex])
 }
 
+function show(ques) {
+
+    questionElement.innerText = ques.question
+    for (let i = 0; i < ques.answers.length; i++) {
+        const button = document.createElement('Button')
+        button.setAttribute("value", ques.answers[i].correct)
+        button.innerText = ques.answers[i].text
+        button.classList.add('btn')
+        if (answer.correct) {
+            button.dataset.correct = answer.correct
+        }
+        button.addEventListener('click', selectAnswer)
+        answerElement.appendChild(button)
+    }
+}
+
 function selectAnswer(e) {
     const selected = e.target
-    const correct = selected.dataset.correct
-    setStatusClass(document.body, correct)
-    Array.from(answerElement.children).forEach(button => {
-        setStatusClass(button, button.dataset.correct)
-    });
+    console.log(selected.dataset)
+    const correct = selected.getAttribute("value")
+    setStatusClass(selected, correct)
+
     if (shuffledQuestion.length > currentQuestionIndex + 1) {
         nextButton.classList.remove('hide')
     } else {
         startButton.innerText = "Finish"
         startButton.classList.remove('hide')
+        questionElement.innerText = "You Get '" + rightAns + "' Right Answers or '" + wrongAns + "' Wrong"
+        reset()
+        rightAns = 0
+        wrongAns = 0
+    }
+}
+var rightAns = 0
+var wrongAns = 0
+
+function setStatusClass(element, correct) {
+    clearStatusClass()
+    if (correct == "true") {
+        rightAns++
+        element.classList.add('correct')
+        element.classList.remove('wrong')
+    } else {
+        wrongAns++
+        element.classList.add('wrong')
+        element.classList.remove('correct')
+        getCorrect()
     }
 }
 
-function setStatusClass(element, correct) {
-    clearStatusClass(element)
-    if (correct) {
-        element.classList.add('correct')
-    } else {
-        element.classList.add('wrong')
-    }
+function getCorrect(e) {
+    Array.from(answerElement.children).forEach(button => {
+        if (button.getAttribute("value") == "true") {
+            button.classList.add('correct')
+            button.classList.remove('wrong')
+        }
+    });
 }
 
 function clearStatusClass(e) {
-    e.classList.remove('correct')
-    e.classList.remove('wrong')
+    Array.from(answerElement.children).forEach(button => {
+        button.classList.remove('correct')
+        button.classList.add('wrong')
+    });
 }
 
 function reset() {
-    clearStatusClass(document.body)
+    //clearStatusClass(document.body)
     nextButton.classList.add('hide')
     while (answerElement.firstChild) {
         answerElement.removeChild(answerElement.firstChild)
@@ -64,41 +101,30 @@ function reset() {
 }
 
 const questions = [{
-    question: 'What is 2+2',
-    answers: [
-        { text: '4', correct: true },
-        { text: '8', correct: false },
-        { text: '44', correct: false },
-        { text: '22', correct: false }
-    ]
-}, {
-    question: 'What is Javascript',
-    answers: [
-        { text: 'Front End', correct: false },
-        { text: 'Client Side', correct: true },
-        { text: 'Server Side', correct: false },
-        { text: 'Back End', correct: false }
-    ]
-}, {
-    question: 'What is ReactJs',
-    answers: [
-        { text: 'Framework', correct: true },
-        { text: 'CMS', correct: false },
-        { text: 'IDE', correct: false }, { text: 'Platform', correct: false }
-    ]
-}]
-
-
-function show(ques) {
-    questionElement.innerText = questions.question
-    questions.question.answers.forEach(answer => {
-        const button = document.createElement('Button')
-        button.innerText = answer.text
-        button.classList.add('btn')
-        if (answer.correct) {
-            button.dataset.correct = answer.correct
-        }
-        button.addEventListener('click', selectAnswer)
-        answerElement.appendChild(button)
-    });
-}
+        question: 'What is 2+2',
+        answers: [
+            { text: '4', correct: true },
+            { text: '8', correct: false },
+            { text: '44', correct: false },
+            { text: '22', correct: false }
+        ]
+    },
+    {
+        question: 'What is Javascript',
+        answers: [
+            { text: 'Front End', correct: false },
+            { text: 'Client Side', correct: true },
+            { text: 'Server Side', correct: false },
+            { text: 'Back End', correct: false }
+        ]
+    },
+    {
+        question: 'What is ReactJs',
+        answers: [
+            { text: 'Framework', correct: true },
+            { text: 'CMS', correct: false },
+            { text: 'IDE', correct: false },
+            { text: 'Platform', correct: false }
+        ]
+    }
+]
